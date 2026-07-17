@@ -1,34 +1,17 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
+
+	"github.com/korvlad21/firstGoWeb/handler"
 )
 
-type Response struct {
-	Message string `json:"message"`
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	json.NewEncoder(w).Encode(Response{
-		Message: "Hello from Go!",
-	})
-}
-
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	helloHandler := handler.NewHelloHandler()
 
-		fmt.Fprint(w, "<div>Hello World</div>")
-	})
+	http.HandleFunc("/", helloHandler.Index)
+	http.HandleFunc("/hello", helloHandler.Hello)
 
-	// JSON API
-	http.HandleFunc("/hello", helloHandler)
-
-	http.ListenAndServe(":8080", nil)
-
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
